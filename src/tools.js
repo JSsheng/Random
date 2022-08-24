@@ -7,7 +7,16 @@ export const getMemberId = (context) => {
 }
 
 export const getMemberList = (context) => {
-  return context?.getDisplayer()?.state?.roomMembers?.map((memebr) => memebr.memberId) || [];
+  const res = [];
+
+  // 排除老师
+  context?.getDisplayer()?.state?.roomMembers?.map((memebr) => {
+    if (memebr.memberId !== getMemberId(context)) {
+      res.push(memebr.memberId);
+    }
+  }) || [];
+
+  return res;
 }
 
 export const createElement = ({ type, classList = [], innerHTML }) => {
