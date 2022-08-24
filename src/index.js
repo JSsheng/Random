@@ -64,7 +64,7 @@ const Random = {
 
     start.addEventListener('click', () => {
       if (storage.state.arr.length <= 1 ) {
-        alert("当前房间只有 1 人");
+        alert("当前房间只有 1 名学生");
         return;
       }
 
