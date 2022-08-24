@@ -28,8 +28,10 @@ const Random = {
     const $content = createElement({ type: "div", classList: ["app-random"] });
     box.mountContent($content);
 
+    const $isMe = createElement({ type: "p", classList: ["is-me"], innerHTML: "当前ID： " + getMemberId(context) });
     const $container = createElement({ type: "div", classList: ["name-container"]});
     const $ready = createElement({ type: "div", classList: ["name-list"]});
+    $content.appendChild($isMe);
     $content.appendChild($container);
     $container.appendChild($ready);
     
@@ -41,20 +43,18 @@ const Random = {
     $section.appendChild($btn1);
     $content.appendChild($section);
 
-    let arr = getMemberList(context) || [];
-
-    arr.forEach((i, idx) => {
-      const el = createElement({ type: "div", classList: ['name-item', `item-${idx}`], innerHTML: i });
-      $ready.appendChild(el);
-    })
-
     const storage = context.createStorage("random", {
-      timer: 0,
       disabled: false,
       result: "",
       teacherId: "",
-      preIdx: -1
+      preIdx: -1,
+      arr: getMemberList(context)
     });
+
+    storage.state.arr.forEach((i, idx) => {
+      const el = createElement({ type: "div", classList: ['name-item', `item-${idx}`], innerHTML: i });
+      $ready.appendChild(el);
+    })
 
     const start = document.querySelector('.start')
 
@@ -63,7 +63,7 @@ const Random = {
     }
 
     start.addEventListener('click', () => {
-      if (arr.length <= 1 ) {
+      if (storage.state.arr.length <= 1 ) {
         alert("当前房间只有 1 人");
         return;
       }
@@ -72,7 +72,11 @@ const Random = {
         return;
       }
 
-      arr = getMemberList(context);
+      if (storage.state.preIdx !== -1) {
+        storage.setState({ preIdx: -1 });
+      }
+
+      storage.setState({ arr: getMemberList(context)})
 
       storage.setState({
         result: null,
@@ -80,7 +84,7 @@ const Random = {
       });
 
       setTimeout(async () => {
-        storage.setState({ disabled: false, result: arr[getRandom(1, arr.length - 1)] })
+        storage.setState({ disabled: false, result: storage.state.arr[getRandom(1, storage.state.arr.length - 1)] })
       }, 5000)
     });
 
@@ -97,36 +101,35 @@ const Random = {
           $section.style.display = "none"
       }
 
+      if (o?.hasOwnProperty("preIdx")) {
+        if (o.preIdx.newValue !== -1) {
+          const elList = document.getElementsByClassName(`item-${o.preIdx.newValue}`);
+          elList[0].classList.add("active");
+          elList[0].scrollTo({ top: 0, behavior: "smooth" });
+        } else {
+          const elList = document.getElementsByClassName(`item-${o.preIdx.oldValue}`);
+          elList[0].classList.remove("active");
+        }
+      }
+
       if (o?.hasOwnProperty("result")) {
-        console.log(o)
         if (!storage.state.result) {
           $tip.innerHTML = "";
         } else {
-          // TODO 后续每次需要先清除 active
-          const idx = arr.findIndex(i => i == storage.state.result);
-          if (storage.state.preIdx !== -1) {
-            const elList = document.getElementsByClassName(`item-${idx}`);
+          const idx = storage.state.arr.findIndex(i => i == storage.state.result);
 
-            if (elList) {
-              elList[0].classList.remove("active");
-              storage.setState({ preIdx: -1 });
-            }
-          }
-          
           if(idx > -1) {
             const elList = document.getElementsByClassName(`item-${idx}`);
   
             if (elList) {
               storage.setState({ preIdx: idx });
-              elList[0].classList.add("active");
-              elList[0].scrollTo({top: 0, behavior: "smooth"});
+              
+              if (getMemberId(context) === storage.state.result) {
+                $tip.innerHTML = "抽到你啦！";
+              }
             }
           }
         }
-      }
-
-      if (storage.state.result && storage.state.result === getMemberId(context) && !storage.state.disabled) {
-        $tip.innerHTML = "抽到你啦！"
       }
     }
 
