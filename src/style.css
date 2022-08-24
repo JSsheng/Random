@@ -1,0 +1,85 @@
+
+.app-random button {
+  font-size: 20px;
+  margin: 0 10px;
+  font-family: monospace;
+  cursor: pointer;
+}
+
+ .app-random {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 200px;
+  margin: 65px auto;
+  margin-bottom: 12px;
+  color: #fff;
+  text-align: center;
+  font-size: 20px;
+ }
+
+ .app-random section {
+   margin: auto;
+   text-align: center;
+ }
+
+ .hide {
+  display: none;
+ }
+
+ .tip {
+  text-align: center;
+  font-size: 12px;
+  color: #e30e0e;
+ }
+
+ .name-container {
+  width: 200px;
+  height: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #454545;
+ }
+
+ .name-list {
+  width: 100%;
+  height: 100%;
+ }
+
+ .name-list .name-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50px;
+ }
+
+ .name-item.active {
+  background: rgba(0, 0, 0, .3);
+  border-radius: 8px;
+ }
+
+ .name-list.animation {
+  animation: slideLeft .5s linear 0s infinite;
+ }
+
+ @keyframes slideLeft {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-50px);
+    opacity: 0
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(250px);
+  }
+}
+
+.app-random .disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+ 
